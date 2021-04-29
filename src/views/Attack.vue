@@ -1,5 +1,24 @@
 <template>
     <div class="container is-fluid app-container">
+        <h1 class="title is-1">Adversarial NER Attacks Browser</h1>
+
+        <div class="file">
+            <label class="file-label">
+                <input class="file-input" type="file" id="file" ref="datasetFile" v-on:change="handleFileUpload()"/>
+
+                <span class="file-cta">
+                <span class="file-icon">
+                    <i class="fas fa-file-upload"></i>
+                </span>
+                <span class="file-label">
+                    Open Dataset
+                </span>
+                </span>
+            </label>
+        </div>
+
+        <br/>
+
         <div v-for="(sample, sampleIndex) in samples" :key="sampleIndex">
             <h3 class="subtitle is-3">Attacked Sample</h3>
 
@@ -32,8 +51,6 @@
 
 import TaggedSample from "@/components/TaggedSample.vue"
 
-import jsonSamples from '@/datasets/sample.json';
-
 export default {
     name: "Attack",
     components: {
@@ -44,12 +61,7 @@ export default {
             samples: []
         }
     },
-    mounted () {
-        let successfulAttacks = jsonSamples.filter(sample => sample.status.includes("SuccessfulAttackResult"));
-        this.samples = successfulAttacks.map(this.processSample);
-
-        console.log(this.samples);
-    },
+    mounted () {},
     methods: {
         processSample(sample) {
             let differentIndices = [];
@@ -69,6 +81,25 @@ export default {
                 perturbedLabels: sample.perturbed_labels,
                 differentIndices: differentIndices
             }
+        },
+        processDataset (dataset) {
+            let successfulAttacks = dataset.filter(sample => sample.status.includes("SuccessfulAttackResult"));
+            this.samples = successfulAttacks.map(this.processSample);
+        },
+        handleFileUpload () {
+            let file = this.$refs.datasetFile.files[0];
+
+            let reader = new FileReader();
+
+            reader.readAsText(file, "UTF-8");
+
+            reader.onload = evt => {
+                this.processDataset(JSON.parse(evt.target.result));
+            }
+
+            reader.onerror = evt => {
+                console.error(evt);
+            }
         }
     }
 };
@@ -76,4 +107,11 @@ export default {
 </script>
 
 <style scoped>
+
+.file-cta {
+    border-radius: 0px;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: #ecf0f1;
+}
+
 </style>
