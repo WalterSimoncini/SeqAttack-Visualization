@@ -19,6 +19,19 @@
 
         <br/>
 
+        <div v-if="this.meta.length > 0">
+            <h3 class="subtitle is-3">Attack Parameters</h3>
+
+            <b-table
+                :striped="true"
+                :data="meta"
+                :columns="columns"></b-table>
+
+            <pre class="code-pre" v-highlightjs="command">
+                <code></code>
+            </pre>
+        </div>
+
         <div v-for="(sample, sampleIndex) in samples" :key="sampleIndex">
             <h3 class="subtitle is-3">Attacked Sample</h3>
 
@@ -58,7 +71,18 @@ export default {
     },
     data: function () {
         return {
-            samples: []
+            samples: [],
+            columns: [
+                {
+                    field: "property_name",
+                    label: 'Property Name',
+                },
+                {
+                    field: "value",
+                    label: 'Value',
+                }
+            ],
+            meta: []
         }
     },
     mounted () {},
@@ -83,8 +107,38 @@ export default {
             }
         },
         processDataset (dataset) {
+            let meta = [];
+            
+            if ("meta" in dataset) {
+                let metaKeys = Object.keys(dataset.meta);
+                let command = "";
+
+                for (let i = 0; i < metaKeys.length; i++) {
+                    let key = metaKeys[i];
+                    let value = dataset.meta[key];
+
+                    if (key != "script") {
+                        command = command.concat(`--${key.replaceAll("_", "-")} ${value} \\ \n`);
+                    }
+
+                    key = key.replaceAll("_", " ");
+
+                    meta.push({
+                        "property_name": key,
+                        "value": value
+                    })
+                }
+
+                this.command = `${dataset.meta.script} \\ \n${command}`;
+                dataset = dataset.attacked_samples;
+            }
+
             let successfulAttacks = dataset.filter(sample => sample.status.includes("SuccessfulAttackResult"));
+
+            this.meta = meta;
             this.samples = successfulAttacks.map(this.processSample);
+
+            console.log(this.samples);
         },
         handleFileUpload () {
             let file = this.$refs.datasetFile.files[0];
@@ -112,6 +166,11 @@ export default {
     border-radius: 0px;
     border-color: rgba(0, 0, 0, 0);
     background-color: #ecf0f1;
+}
+
+.code-pre {
+    padding: 0px;
+    background-color: white;
 }
 
 </style>
