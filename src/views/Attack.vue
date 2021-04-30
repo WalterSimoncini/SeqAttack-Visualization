@@ -19,6 +19,39 @@
 
         <br/>
 
+        <div v-if="metrics != null">
+            <div class="card">
+                <div class="card-content">
+                    <div class="content">
+                        <div class="columns">
+                            <div class="column metric-column-border">
+                                <MetricsBlock
+                                    :metricName="'Accuracy'"
+                                    :originalValue="metrics.original.accuracy"
+                                    :perturbedValue="metrics.perturbed.accuracy" />
+                            </div>
+
+                            <div class="column metric-column-border padded-metric">
+                                <MetricsBlock
+                                    :metricName="'Recall'"
+                                    :originalValue="metrics.original.recall"
+                                    :perturbedValue="metrics.perturbed.recall" />
+                            </div>
+
+                            <div class="column padded-metric">
+                                <MetricsBlock
+                                    :metricName="'F1'"
+                                    :originalValue="metrics.original.f1"
+                                    :perturbedValue="metrics.perturbed.f1" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+        </div>
+
         <div v-if="this.meta.length > 0">
             <h3 class="subtitle is-3">Attack Parameters</h3>
 
@@ -63,11 +96,14 @@
 <script>
 
 import TaggedSample from "@/components/TaggedSample.vue"
+import MetricsBlock from "@/components/MetricsBlock.vue"
+
 
 export default {
     name: "Attack",
     components: {
-        TaggedSample
+        TaggedSample,
+        MetricsBlock
     },
     data: function () {
         return {
@@ -82,7 +118,8 @@ export default {
                     label: 'Value',
                 }
             ],
-            meta: []
+            meta: [],
+            metrics: null
         }
     },
     mounted () {},
@@ -108,6 +145,8 @@ export default {
         },
         processDataset (dataset) {
             let meta = [];
+
+            this.metrics = dataset.metrics
             
             if ("meta" in dataset) {
                 let metaKeys = Object.keys(dataset.meta);
@@ -171,6 +210,14 @@ export default {
 .code-pre {
     padding: 0px;
     background-color: white;
+}
+
+.metric-column-border {
+    border-right: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.padded-metric {
+    padding-left: 24px;
 }
 
 </style>
