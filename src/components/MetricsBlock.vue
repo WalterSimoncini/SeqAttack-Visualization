@@ -3,12 +3,13 @@
     <h4 class="subtitle is-4 metrics-subtitle">
         {{ this.metricName }}
     </h4>
-                            
+
     <p class="is-size-3 metrics-value">
         {{ this.perturbedValue.toFixed(5) }}
     </p>
+
     <p class="is-size-6">
-        Original: {{ this.originalValue.toFixed(5) }} (<i class="fas fa-long-arrow-alt-down"></i> {{ metricChange }}%)
+        Original: {{ this.originalValue.toFixed(5) }} (<i class="fas fa-long-arrow-alt-down"></i> {{ (metricChange * 100).toFixed(2) }}%)
     </p>
   </div>
 </template>

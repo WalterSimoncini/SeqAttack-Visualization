@@ -1,32 +1,28 @@
 <template>
-  <div>
-    <span v-for="(word, wordIndex) in sample" :key="wordIndex">
-      <HighlightedBlock
-        :token="word.word"
-        :sampleLabel="word.label"
-        :isPerturbed="word.isPerturbed"
-        :showLabel="true" />
+  <div style="display: inline">
+    <span class="tag word-tag" :style="blockStyle">
+        {{ token }}
+
+        <span :class="`label-tag ${classMap[sampleLabel]}`" v-if="showLabel && sampleLabel != 'O'">
+            {{ sampleLabel }}
+        </span>
     </span>
   </div>
 </template>
 
 <script>
 
-import HighlightedBlock from "@/components/HighlightedBlock.vue"
-
 export default {
-  name: 'TaggedSample',
-  components: {
-    HighlightedBlock
-  },
+  name: 'HighlightedBlock',
   props: {
-    sampleText: String,
-    sampleLabels: Array,
-    differentIndices: Array
+    token: String,
+    sampleLabel: String,
+    isPerturbed: Boolean,
+    showLabel: Boolean
   },
   data: function () {
     return {
-      sample: null,
+      blockStyle: null,
       backgroundColorMap: {
         "O": "#FFFFFF",
         "B-MISC": "rgba(237, 233, 254)",
@@ -48,22 +44,37 @@ export default {
         "I-ORG": "rgba(17, 94, 89)",
         "B-LOC": "rgba(134, 25, 143)",
         "I-LOC": "rgba(134, 25, 143)",
+      },
+      classMap: {
+        "O": "",
+        "B-MISC": "misc-tag",
+        "I-MISC": "misc-tag",
+        "B-PER": "per-tag",
+        "I-PER": "per-tag",
+        "B-ORG": "org-tag",
+        "I-ORG": "org-tag",
+        "B-LOC": "loc-tag",
+        "I-LOC": "loc-tag",
       }
     }
   },
   mounted () {
-    let output = [];
-    let words = this.sampleText.split(" ");
+    let fontWeight = "normal";
+    let textDecoration = "initial";
 
-    for (let i = 0; i < words.length; i++) {
-      output.push({
-          word: words[i],
-          label: this.sampleLabels[i],
-          isPerturbed: this.differentIndices.includes(i)
-      });
+    if (this.sampleLabel != "O") fontWeight = "bold";
+
+    if (this.isPerturbed) {
+        textDecoration = "3px solid #ff005c";
     }
 
-    this.sample = output;
+    this.blockStyle = {
+        "background-color": this.backgroundColorMap[this.sampleLabel],
+        "color": this.textColorMap[this.sampleLabel],
+        "font-weight": fontWeight,
+        "border-bottom": textDecoration,
+        "border-radius": "0px"
+    }
   }
 }
 

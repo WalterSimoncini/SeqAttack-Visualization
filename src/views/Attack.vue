@@ -23,29 +23,43 @@
             <div class="card">
                 <div class="card-content">
                     <div class="content">
+                        <p>Micro averaged metrics</p>
+
                         <div class="columns">
                             <div class="column metric-column-border">
                                 <MetricsBlock
-                                    :metricName="'Accuracy'"
-                                    :originalValue="metrics.original.accuracy"
-                                    :perturbedValue="metrics.perturbed.accuracy" />
+                                    metricName="Accuracy"
+                                    :originalValue="metrics.original['micro avg'].precision"
+                                    :perturbedValue="metrics.attacked['micro avg'].precision" />
                             </div>
 
                             <div class="column metric-column-border padded-metric">
                                 <MetricsBlock
-                                    :metricName="'Recall'"
-                                    :originalValue="metrics.original.recall"
-                                    :perturbedValue="metrics.perturbed.recall" />
+                                    metricName="Recall"
+                                    :originalValue="metrics.original['micro avg'].recall"
+                                    :perturbedValue="metrics.attacked['micro avg'].recall" />
                             </div>
 
                             <div class="column padded-metric">
                                 <MetricsBlock
-                                    :metricName="'F1'"
-                                    :originalValue="metrics.original.f1"
-                                    :perturbedValue="metrics.perturbed.f1" />
+                                    metricName="F1"
+                                    :originalValue="metrics.original['micro avg']['f1-score']"
+                                    :perturbedValue="metrics.attacked['micro avg']['f1-score']" />
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <br />
+            <br />
+
+            <div class="columns">
+                <div class="column">
+                    <MetricsTable :metrics="metrics.original" tableTitle="Original Dataset" />
+                </div>
+                <div class="column">
+                    <MetricsTable :metrics="metrics.attacked" tableTitle="Attacked Dataset" />
                 </div>
             </div>
 
@@ -97,13 +111,14 @@
 
 import TaggedSample from "@/components/TaggedSample.vue"
 import MetricsBlock from "@/components/MetricsBlock.vue"
-
+import MetricsTable from "@/components/MetricsTable.vue"
 
 export default {
     name: "Attack",
     components: {
         TaggedSample,
-        MetricsBlock
+        MetricsBlock,
+        MetricsTable
     },
     data: function () {
         return {
@@ -146,7 +161,7 @@ export default {
         processDataset (dataset) {
             let meta = [];
 
-            this.metrics = dataset.metrics
+            this.metrics = dataset.metrics;
             
             if ("meta" in dataset) {
                 let metaKeys = Object.keys(dataset.meta);
