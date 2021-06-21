@@ -82,6 +82,12 @@
         <div v-for="(sample, sampleIndex) in samples" :key="sampleIndex">
             <h3 class="subtitle is-3">Attacked Sample</h3>
 
+            <b-field>
+                <b-switch v-model="sample.picked">
+                    Pick Sample
+                </b-switch>
+            </b-field>
+
             <ul>
                 <li>
                     <b>Original sample:</b> {{ sample.originalText }}
@@ -104,6 +110,13 @@
                 :differentIndices="sample.differentIndices" />
             <hr />
         </div>
+
+        <b-button
+            v-on:click="downloadSamples"
+            id="download-button"
+            type="is-primary">
+            Download Picked
+        </b-button>
     </div>
 </template>
 
@@ -112,6 +125,8 @@
 import TaggedSample from "@/components/TaggedSample.vue"
 import MetricsBlock from "@/components/MetricsBlock.vue"
 import MetricsTable from "@/components/MetricsTable.vue"
+
+import download from "downloadjs"
 
 export default {
     name: "Attack",
@@ -139,6 +154,25 @@ export default {
     },
     mounted () {},
     methods: {
+        downloadSamples () {
+            let pickedSamples = [];
+
+            for (let i = 0; i < this.samples.length; i++) {
+                let sample = this.samples[i];
+
+                if (sample.picked) {
+                    pickedSamples.push([
+                        sample.perturbedText, sample.groundTruth
+                    ]);
+                }
+            }
+
+            let outputJSON = {
+                "samples": pickedSamples
+            }
+
+            download(JSON.stringify(outputJSON), "picked-samples.json", "application/json");
+        },
         processSample(sample) {
             let differentIndices = [];
             let originalTokens = sample.attacked_sample.split(" ");
@@ -155,7 +189,9 @@ export default {
                 perturbedText: sample.perturbed_text,
                 originalLabels: sample.original_labels,
                 perturbedLabels: sample.perturbed_labels,
-                differentIndices: differentIndices
+                differentIndices: differentIndices,
+                picked: false,
+                groundTruth: sample.final_ground_truth
             }
         },
         processDataset (dataset) {
@@ -233,6 +269,12 @@ export default {
 
 .padded-metric {
     padding-left: 24px;
+}
+
+#download-button {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
 }
 
 </style>

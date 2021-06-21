@@ -1,7 +1,7 @@
 <template>
   <div>
     <h4 class="subtitle is-4 metrics-subtitle">
-        {{ this.metricName }}
+      {{ this.metricName }}
     </h4>
 
     <p class="is-size-3 metrics-value">
