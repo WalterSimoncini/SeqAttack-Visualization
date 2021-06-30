@@ -1,18 +1,70 @@
 <template>
     <div class="container is-fluid app-container">
-        <h1 class="title is-1">Adversarial NER Attacks Browser</h1>
+        <h1 class="title is-1">Adversarial NER Attacks</h1>
+
+        <br/>
+
+        <div class="columns">
+            <div class="column is-6">
+                <h4 class="subtitle is-4">Prediction</h4>
+                <p>Predicts named entities in the input text using a bert-base-cased model fine-tuned on CoNLL2003. The recognized entities are person names (PER), locations (LOC), organizations (ORG) and miscellaneous (MISC)</p><br/>
+                <PredictionTextField />
+            </div>
+        </div>
+
+        <div class="columns">
+            <div class="column is-6">
+                <h4 class="subtitle is-4">Attack</h4>
+                <p>Run an attack against a BERT-based model trained on CoNLL2003. The following attack strategies are supported:</p>
+
+                <br/>
+
+                <ul>
+                    <li>DeepWordBug: character-level attack. Supports character insertions, deletions, replacements and swaps (ab → ba)</li>
+                    <li>DeepWordBug (constrained): same as above, but the algorithm cannot attack named entities</li>
+                    <li>BERT-Attack: word replacements using a bert-base-cased masked language model</li>
+                    <li>SCPN: paraphrase generation</li>
+                </ul>
+
+                <br/>
+
+                <p><b>WARNING:</b> BERT-Attack and SCPN may need a long compute time, thus attacks are limited to 30 seconds. After the timeout the attack will be considered failed.</p>
+
+                <br/>
+                <AttackTextField />
+            </div>
+        </div>
+
+        <br/><br/>
+
+        <h4 class="subtitle is-4">Dataset Visualization</h4>
+
+        <p>
+            Visualize an attacked dataset. Sample datasets for various attack strategies can be downloaded at the links belows.<br/>
+            For each sample the top row contains the original text (with its ground truth prediction) and the bottom row its perturbed counterpart.<br/>
+            We recommend to reload the page before loading a new dataset
+        </p>
+
+        <br/>
+
+        <a class="file-link" v-on:click="downloadDataset('deepwordbug.json')">deepwordbug.json</a>
+        <a class="file-link" v-on:click="downloadDataset('deepwordbug-constraint.json')">deepwordbug-constraint.json</a>
+        <a class="file-link" v-on:click="downloadDataset('bert-attack.json')">bert-attack.json</a>
+        <a class="file-link" v-on:click="downloadDataset('scpn.json')">scpn.json</a>
+
+        <br/><br/>
 
         <div class="file">
             <label class="file-label">
                 <input class="file-input" type="file" id="file" ref="datasetFile" v-on:change="handleFileUpload()"/>
 
-                <span class="file-cta">
-                <span class="file-icon">
-                    <i class="fas fa-file-upload"></i>
-                </span>
-                <span class="file-label">
-                    Open Dataset
-                </span>
+                <span class="file-cta header-btn">
+                    <span class="file-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </span>
+                    <span class="file-label">
+                        Open Dataset
+                    </span>
                 </span>
             </label>
         </div>
@@ -126,17 +178,25 @@ import TaggedSample from "@/components/TaggedSample.vue"
 import MetricsBlock from "@/components/MetricsBlock.vue"
 import MetricsTable from "@/components/MetricsTable.vue"
 
+import PredictionTextField from "@/components/PredictionTextField.vue"
+import AttackTextField from "@/components/AttackTextField.vue"
+
 import download from "downloadjs"
 
+const axios = require("axios");
+
 export default {
-    name: "Attack",
+    name: "Visualize",
     components: {
         TaggedSample,
         MetricsBlock,
-        MetricsTable
+        MetricsTable,
+        PredictionTextField,
+        AttackTextField
     },
     data: function () {
         return {
+            apiRoot: process.env.VUE_APP_API_ROOT,
             samples: [],
             columns: [
                 {
@@ -154,6 +214,11 @@ export default {
     },
     mounted () {},
     methods: {
+        downloadDataset (filename) {
+            axios.get(`${process.env.VUE_APP_API_ROOT}/datasets/${filename}`).then(function (response) {
+                download(JSON.stringify(response.data), filename, "application/json");
+            })
+        },
         downloadSamples () {
             let pickedSamples = [];
 
@@ -275,6 +340,20 @@ export default {
     position: fixed;
     bottom: 16px;
     right: 16px;
+}
+
+.header-btn {
+    margin-right: 16px;
+}
+
+.file-link {
+    margin-right: 16px;
+    text-decoration: underline;
+}
+
+li {
+    list-style-type: disc !important;
+    margin-left: 16px;
 }
 
 </style>

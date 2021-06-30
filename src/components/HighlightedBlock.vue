@@ -58,23 +58,33 @@ export default {
       }
     }
   },
+  watch: { 
+    sampleLabel: function() {
+      this.applyStyle();
+    }
+  },
+  methods: {
+    applyStyle: function () {
+      let fontWeight = "normal";
+      let textDecoration = "initial";
+
+      if (this.sampleLabel != "O") fontWeight = "bold";
+
+      if (this.isPerturbed) {
+          textDecoration = "3px solid #ff005c";
+      }
+
+      this.blockStyle = {
+          "background-color": this.backgroundColorMap[this.sampleLabel],
+          "color": this.textColorMap[this.sampleLabel],
+          "font-weight": fontWeight,
+          "border-bottom": textDecoration,
+          "border-radius": "0px"
+      }
+    }
+  },
   mounted () {
-    let fontWeight = "normal";
-    let textDecoration = "initial";
-
-    if (this.sampleLabel != "O") fontWeight = "bold";
-
-    if (this.isPerturbed) {
-        textDecoration = "3px solid #ff005c";
-    }
-
-    this.blockStyle = {
-        "background-color": this.backgroundColorMap[this.sampleLabel],
-        "color": this.textColorMap[this.sampleLabel],
-        "font-weight": fontWeight,
-        "border-bottom": textDecoration,
-        "border-radius": "0px"
-    }
+    this.applyStyle();
   }
 }
 
@@ -83,7 +93,7 @@ export default {
 <style scoped>
 
 .word-tag {
-    margin: 8px;
+    margin: 4px;
     font-size: 14px;
     padding-top: 20px;
     padding-bottom: 20px;

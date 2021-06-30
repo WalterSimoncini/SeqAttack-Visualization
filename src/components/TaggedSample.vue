@@ -26,7 +26,6 @@ export default {
   },
   data: function () {
     return {
-      sample: null,
       backgroundColorMap: {
         "O": "#FFFFFF",
         "B-MISC": "rgba(237, 233, 254)",
@@ -51,19 +50,21 @@ export default {
       }
     }
   },
-  mounted () {
-    let output = [];
-    let words = this.sampleText.split(" ");
+  computed: {
+    sample: function () {
+      let output = [];
+      let words = this.sampleText.split(" ");
 
-    for (let i = 0; i < words.length; i++) {
-      output.push({
-          word: words[i],
-          label: this.sampleLabels[i],
-          isPerturbed: this.differentIndices.includes(i)
-      });
+      for (let i = 0; i < words.length; i++) {
+        output.push({
+            word: words[i],
+            label: this.sampleLabels[i],
+            isPerturbed: this.differentIndices.includes(i)
+        });
+      }
+
+      return output
     }
-
-    this.sample = output;
   }
 }
 

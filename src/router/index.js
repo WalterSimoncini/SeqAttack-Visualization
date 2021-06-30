@@ -11,7 +11,7 @@ const routes = [
       {
         path: '',
         name: 'attack-visualization',
-        component: () => import('@/views/Attack.vue')
+        component: () => import('@/views/Visualize.vue')
       }
     ]
   }
