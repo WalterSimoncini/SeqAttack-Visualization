@@ -7,7 +7,7 @@
         <div class="columns">
             <div class="column is-6">
                 <h4 class="subtitle is-4">Prediction</h4>
-                <p>Predicts named entities in the input text using a bert-base-cased model fine-tuned on CoNLL2003. The recognized entities are person names (PER), locations (LOC), organizations (ORG) and miscellaneous (MISC)</p><br/>
+                <p>Predicts named entities in the input text using a bert-base-cased model fine-tuned on <a href="https://www.clips.uantwerpen.be/conll2003/ner/" target="_blank" rel="noopener">CoNLL2003</a>. The recognized entities are person names (PER), locations (LOC), organizations (ORG) and miscellaneous (MISC)</p><br/>
                 <PredictionTextField />
             </div>
         </div>
@@ -15,15 +15,19 @@
         <div class="columns">
             <div class="column is-6">
                 <h4 class="subtitle is-4">Attack</h4>
-                <p>Run an attack against a BERT-based model trained on CoNLL2003. The following attack strategies are supported:</p>
+                <p>
+                    Run an attack against a BERT-based model trained on <a href="https://www.clips.uantwerpen.be/conll2003/ner/" target="_blank" rel="noopener">CoNLL2003</a>.
+                    Attacks are executed using a custom framework built on top of <a href="https://github.com/QData/TextAttack" target="_blank" rel="noopener">TextAttack</a>.
+                    The following attack strategies are supported:
+                </p>
 
                 <br/>
 
                 <ul>
-                    <li>DeepWordBug: character-level attack. Supports character insertions, deletions, replacements and swaps (ab → ba)</li>
-                    <li>DeepWordBug (constrained): same as above, but the algorithm cannot attack named entities</li>
-                    <li>BERT-Attack: word replacements using a bert-base-cased masked language model</li>
-                    <li>SCPN: paraphrase generation</li>
+                    <li><a href="https://arxiv.org/pdf/1801.04354.pdf" target="_blank" rel="noopener">DeepWordBug</a>: character-level attack. Supports character insertions, deletions, replacements and swaps (ab → ba)</li>
+                    <li><a href="https://arxiv.org/pdf/1801.04354.pdf" target="_blank" rel="noopener">DeepWordBug (constrained)</a>: same as above, but the algorithm cannot attack named entities</li>
+                    <li><a href="https://arxiv.org/pdf/2004.09984.pdf" target="_blank" rel="noopener">BERT-Attack</a>: word replacements using a bert-base-cased masked language model</li>
+                    <li><a href="https://arxiv.org/pdf/1804.06059v1.pdf" target="_blank" rel="noopener">SCPN</a>: paraphrase generation</li>
                 </ul>
 
                 <br/>
