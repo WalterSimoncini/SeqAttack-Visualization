@@ -2,7 +2,21 @@
     <div class="container is-fluid app-container">
         <h1 class="title is-1">Adversarial NER Attacks</h1>
 
+        <p>This is a demo website for the paper SeqAttack: On Adversarial Attacks for Named Entity Recognition. The video below demonstrates how the website works.</p>
+
         <br/>
+
+        <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube-nocookie.com/embed/7LkIDdLSuVQ"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>
+
+        <br/><br/>
 
         <div class="columns">
             <div class="column is-6">
