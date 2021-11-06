@@ -2,7 +2,8 @@
     <div class="container is-fluid app-container">
         <h1 class="title is-1">Adversarial NER Attacks</h1>
 
-        <p>This is a demo website for the paper SeqAttack: On Adversarial Attacks for Named Entity Recognition. The video below demonstrates how the website works.</p>
+        <p>This is a demo website for the paper <a href="https://aclanthology.org/2021.emnlp-demo.35.pdf" target="_blank" rel="noopener">SeqAttack: On Adversarial Attacks for Named Entity Recognition</a>. The video below demonstrates how the website works.</p>
+        <p>Check out <a href="https://github.com/WalterSimoncini/SeqAttack" target="_blank" rel="noopener">SeqAttack on GitHub</a></p>
 
         <br/>
 
@@ -31,7 +32,7 @@
                 <h4 class="subtitle is-4">Attack</h4>
                 <p>
                     Run an attack against a BERT-based model trained on <a href="https://www.clips.uantwerpen.be/conll2003/ner/" target="_blank" rel="noopener">CoNLL2003</a>.
-                    Attacks are executed using a custom framework built on top of <a href="https://github.com/QData/TextAttack" target="_blank" rel="noopener">TextAttack</a>.
+                    Attacks are executed using our framework <a href="https://github.com/WalterSimoncini/SeqAttack" target="_blank" rel="noopener">SeqAttack</a>.
                     The following attack strategies are supported:
                 </p>
 
@@ -142,11 +143,8 @@
             <b-table
                 :striped="true"
                 :data="meta"
-                :columns="columns"></b-table>
-
-            <pre class="code-pre" v-highlightjs="command">
-                <code></code>
-            </pre>
+                :columns="columns">
+            </b-table>
         </div>
 
         <div v-for="(sample, sampleIndex) in samples" :key="sampleIndex">
@@ -158,14 +156,8 @@
                 </b-switch>
             </b-field>
 
-            <ul>
-                <li>
-                    <b>Original sample:</b> {{ sample.originalText }}
-                </li>
-                <li>
-                    <b>Perturbed sample:</b> {{ sample.perturbedText }}
-                </li>
-            </ul>
+            <p><b>Original sample:</b> {{ sample.originalText }}</p>
+            <p><b>Perturbed sample:</b> {{ sample.perturbedText }}</p>
 
             <br />
 
@@ -258,7 +250,7 @@ export default {
         },
         processSample(sample) {
             let differentIndices = [];
-            let originalTokens = sample.attacked_sample.split(" ");
+            let originalTokens = sample.original_text.split(" ");
             let perturbedTokens = sample.perturbed_text.split(" ");
 
             for (let i = 0; i < perturbedTokens.length; i++) {
@@ -268,10 +260,10 @@ export default {
             }
 
             return {
-                originalText: sample.attacked_sample,
+                originalText: sample.original_text,
                 perturbedText: sample.perturbed_text,
-                originalLabels: sample.original_labels,
-                perturbedLabels: sample.perturbed_labels,
+                originalLabels: sample.original_pred_labels,
+                perturbedLabels: sample.perturbed_pred_labels,
                 differentIndices: differentIndices,
                 picked: false,
                 groundTruth: sample.final_ground_truth
@@ -282,16 +274,15 @@ export default {
 
             this.metrics = dataset.metrics;
             
-            if ("meta" in dataset) {
-                let metaKeys = Object.keys(dataset.meta);
-                let command = "";
+            if ("config" in dataset) {
+                let metaKeys = Object.keys(dataset.config);
 
                 for (let i = 0; i < metaKeys.length; i++) {
                     let key = metaKeys[i];
-                    let value = dataset.meta[key];
+                    let value = dataset.config[key];
 
-                    if (key != "script") {
-                        command = command.concat(`--${key.replaceAll("_", "-")} ${value} \\ \n`);
+                    if (typeof value === "object" && value != null) {
+                        value = JSON.stringify(value);
                     }
 
                     key = key.replaceAll("_", " ");
@@ -301,12 +292,11 @@ export default {
                         "value": value
                     })
                 }
-
-                this.command = `${dataset.meta.script} \\ \n${command}`;
-                dataset = dataset.attacked_samples;
             }
 
-            let successfulAttacks = dataset.filter(sample => sample.status.includes("SuccessfulAttackResult"));
+            dataset = dataset.attacked_examples;
+
+            let successfulAttacks = dataset.filter(sample => sample.status.includes("Successful"));
 
             this.meta = meta;
             this.samples = successfulAttacks.map(this.processSample);
